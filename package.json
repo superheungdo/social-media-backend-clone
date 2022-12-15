@@ -1,11 +1,11 @@
 {
-  "name": "social-media-backend-clone",
+  "name": "social-media-backend",
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
   "type": "module",
   "scripts": {
-    "start": "nodemon index.js"
+    "dev": "nodemon index.js"
   },
   "dependencies": {
     "bcrypt": "^5.1.0",
