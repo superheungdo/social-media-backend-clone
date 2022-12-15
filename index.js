@@ -1,11 +1,18 @@
 import express from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
+import cors from "cors";
+
 import authRoute from "./routes/authRoute.js";
 import userRoute from "./routes/userRoute.js";
 import postRoute from "./routes/postRoute.js";
 
 dotenv.config();
+
+const corsOptions = {
+  origin: process.env.CLIENT_URL,
+  credentials: true,
+};
 
 // Routes
 const app = express();
@@ -13,6 +20,7 @@ const app = express();
 // Middleware
 app.use(express.json({ limit: "30mb" }));
 app.use(express.urlencoded({ limit: "30mb", extended: true }));
+app.use(cors(corsOptions));
 
 mongoose
   .connect(process.env.MONGO_DB, {
