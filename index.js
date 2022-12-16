@@ -6,6 +6,7 @@ import cors from "cors";
 import authRoute from "./routes/authRoute.js";
 import userRoute from "./routes/userRoute.js";
 import postRoute from "./routes/postRoute.js";
+import uploadRoute from "./routes/uploadRoute.js";
 
 dotenv.config();
 
@@ -34,7 +35,8 @@ mongoose
   )
   .catch((error) => console.log(error));
 
-// usage of routes
+// Usage of routes
 app.use("/auth", authRoute);
 app.use("/user", userRoute);
 app.use("/post", postRoute);
+app.use("/upload", uploadRoute);
