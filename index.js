@@ -23,6 +23,9 @@ app.use(express.json({ limit: "30mb" }));
 app.use(express.urlencoded({ limit: "30mb", extended: true }));
 app.use(cors(corsOptions));
 
+// Serve images inside public folder
+app.use(express.static("public"));
+
 mongoose
   .connect(process.env.MONGO_DB, {
     useNewUrlParser: true,
