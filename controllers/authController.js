@@ -1,10 +1,23 @@
+import dotenv from "dotenv";
 import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+
 import UserModel from "../models/userModel.js";
+
+dotenv.config();
+
+const secret = process.env.SECRET_KEY;
 
 // Registering a new User
 export const registerUser = async (req, res) => {
   try {
     const { username, password, firstname, lastname } = req.body;
+
+    const alreadyExist = await UserModel.findOne({ username });
+
+    if (alreadyExist) {
+      return res.status(400).json({ message: "User already exists" });
+    }
 
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
@@ -16,8 +29,13 @@ export const registerUser = async (req, res) => {
       lastname,
     });
 
-    await newUser.save();
-    res.status(200).json(newUser);
+    const user = await newUser.save();
+
+    const token = jwt.sign({ id: user._id, username: user.username }, secret, {
+      expiresIn: "1h",
+    });
+
+    res.status(200).json({ token, user });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -33,11 +51,18 @@ export const loginUser = async (req, res) => {
     if (user) {
       const validity = await bcrypt.compare(password, user.password);
 
-      validity
-        ? res.status(200).json(user)
-        : res.status(400).json("Wrong Password");
+      if (!validity) {
+        res.status(400).json("wrong password");
+      } else {
+        const token = jwt.sign(
+          { id: user._id, username: user.username },
+          secret,
+          { expiresIn: "1h" }
+        );
+        res.status(200).json({ token, user });
+      }
     } else {
-      res.status(404).json("User does not exists");
+      res.status(404).json("User not found");
     }
   } catch (error) {
     res.status(500).json({ message: error.message });
